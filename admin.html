@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel | Abhishek Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --bg2: #0e0e0e;
+      --panel: #111;
+      --panel2: #171717;
+      --border: rgba(255,255,255,0.07);
+      --amber: #ffb300;
+      --red: #ff3b3b;
+      --green: #00e676;
+      --blue: #40c4ff;
+      --purple: #ce93d8;
+      --text: #ccc;
+      --dim: #555;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      width: 400px;
+      background: var(--panel);
+      border: 1px solid rgba(255,179,0,0.3);
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--amber), var(--red), var(--amber));
+      background-size: 200%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    @keyframes shimmer { to { background-position: 200%; } }
+
+    .login-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .login-box h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      color: var(--amber);
+      letter-spacing: 3px;
+      margin-bottom: 0.3rem;
+    }
+
+    .login-box p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-bottom: 2rem;
+    }
+
+    .login-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,179,0,0.3);
+      color: var(--text);
+      padding: 0.9rem 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      margin-bottom: 1rem;
+      letter-spacing: 3px;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .login-input:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 15px rgba(255,179,0,0.1);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--amber);
+      color: #000;
+      border: none;
+      padding: 0.9rem;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .login-btn:hover { background: #ffd54f; box-shadow: 0 0 20px rgba(255,179,0,0.4); }
+
+    #login-error {
+      margin-top: 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--red);
+      min-height: 1rem;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    #app { display: none; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 220px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-logo h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      color: var(--amber);
+      letter-spacing: 2px;
+    }
+
+    .sidebar-logo p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dim);
+      margin-top: 0.2rem;
+    }
+
+    .sidebar-nav { flex: 1; padding: 1rem 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      text-decoration: none;
+      letter-spacing: 1px;
+      border-left: 2px solid transparent;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,179,0,0.06);
+      color: var(--amber);
+      border-left-color: var(--amber);
+    }
+
+    .nav-item .nav-icon { font-size: 1rem; }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .logout-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(255,59,59,0.3);
+      color: var(--red);
+      padding: 0.6rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover { background: rgba(255,59,59,0.1); }
+
+    /* MAIN CONTENT */
+    .main {
+      margin-left: 220px;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--green);
+    }
+
+    .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* STAT CARDS */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 1.3rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .stat-card.amber::after { background: var(--amber); }
+    .stat-card.blue::after  { background: var(--blue); }
+    .stat-card.green::after { background: var(--green); }
+    .stat-card.purple::after { background: var(--purple); }
+
+    .stat-card .sc-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .sc-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-card.amber .sc-num { color: var(--amber); }
+    .stat-card.blue .sc-num  { color: var(--blue); }
+    .stat-card.green .sc-num { color: var(--green); }
+    .stat-card.purple .sc-num { color: var(--purple); }
+
+    /* MESSAGES TABLE */
+    .section-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .section-card-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-card-header h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      color: var(--amber);
+      letter-spacing: 1px;
+    }
+
+    .section-card-header .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--dim);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .btn-sm:hover { border-color: var(--amber); color: var(--amber); }
+    .btn-sm.danger:hover { border-color: var(--red); color: var(--red); }
+
+    /* FILTER / SEARCH */
+    .filter-bar {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .filter-bar input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.8rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .filter-bar input:focus { border-color: var(--amber); }
+
+    .filter-bar select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--dim);
+      padding: 0.5rem 0.8rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-bar select option { background: var(--panel); }
+
+    /* TABLE */
+    .msg-table { width: 100%; border-collapse: collapse; }
+
+    .msg-table th {
+      padding: 0.8rem 1.5rem;
+      text-align: left;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--panel2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .msg-table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .msg-table tr:hover td { background: rgba(255,179,0,0.03); }
+
+    .sender-name {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .sender-email {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-top: 0.2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      padding: 0.2rem 0.6rem;
+      letter-spacing: 1px;
+      border-radius: 2px;
+    }
+
+    .badge.new    { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+    .badge.read   { background: rgba(255,255,255,0.05); color: var(--dim); border: 1px solid var(--border); }
+    .badge.collab { background: rgba(64,196,255,0.1); color: var(--blue); border: 1px solid rgba(64,196,255,0.3); }
+    .badge.job    { background: rgba(206,147,216,0.1); color: var(--purple); border: 1px solid rgba(206,147,216,0.3); }
+    .badge.query  { background: rgba(255,179,0,0.1); color: var(--amber); border: 1px solid rgba(255,179,0,0.3); }
+
+    .msg-preview {
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--dim);
+      font-size: 0.85rem;
+    }
+
+    .date-str {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--dim);
+      white-space: nowrap;
+    }
+
+    .row-actions { display: flex; gap: 0.4rem; }
+
+    .action-btn {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover.view-btn { border-color: var(--blue); }
+    .action-btn:hover.del-btn  { border-color: var(--red); }
+
+    /* EMPTY STATE */
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    .empty-state h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      color: var(--dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid rgba(255,179,0,0.3);
+      width: 560px;
+      max-width: 95vw;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      color: var(--amber);
+      letter-spacing: 1px;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--dim);
+      background: none;
+      border: none;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover { color: var(--red); }
+
+    .modal-body { padding: 1.5rem; }
+
+    .modal-field { margin-bottom: 1.2rem; }
+
+    .modal-field .mf-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .modal-field .mf-val {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      padding: 0.8rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .modal-field .mf-val.highlight { color: var(--amber); font-family: 'Share Tech Mono', monospace; }
+
+    /* PAGINATION */
+    .pagination {
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+    }
+
+    .pagination-info {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+
+    .page-btns { display: flex; gap: 0.4rem; }
+
+    .page-btn {
+      width: 30px; height: 30px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--dim);
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .page-btn:hover, .page-btn.active {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    /* ADD TEST MSG */
+    .test-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.5rem 1rem;
+      background: rgba(0,230,118,0.1);
+      border: 1px solid rgba(0,230,118,0.3);
+      color: var(--green);
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+
+    .test-btn:hover { background: rgba(0,230,118,0.2); }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: var(--panel);
+      border: 1px solid rgba(255,179,0,0.4);
+      padding: 0.8rem 1.5rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--amber);
+      z-index: 999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🛡️</div>
+    <h2>ADMIN ACCESS</h2>
+    <p>// portfolio control panel · restricted</p>
+    <input class="login-input" type="password" id="pwd-input"
+           placeholder="ENTER PASSWORD"
+           onkeydown="if(event.key==='Enter') doLogin()" />
+    <button class="login-btn" onclick="doLogin()">AUTHENTICATE</button>
+    <div id="login-error"></div>
+    <div style="margin-top:1.5rem;font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--dim)">
+      default password: admin123
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <h1>CTRL PANEL</h1>
+      <p>// portfolio · admin v1.0</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="#" onclick="showSection('messages')">
+        <span class="nav-icon">✉️</span> Messages
+      </a>
+      <a class="nav-item" href="#" onclick="showSection('stats')">
+        <span class="nav-icon">📊</span> Analytics
+      </a>
+      <a class="nav-item" href="index.html" target="_blank">
+        <span class="nav-icon">🌐</span> View Site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">⬡ LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <h2 id="page-title">Messages Dashboard</h2>
+      <div class="topbar-right">
+        <div class="live-indicator">
+          <div class="live-dot"></div>
+          <span>LIVE</span>
+        </div>
+        <button class="test-btn" onclick="addTestMessage()">+ Add Test Message</button>
+      </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card amber">
+        <div class="sc-label">Total Messages</div>
+        <div class="sc-num" id="stat-total">0</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="sc-label">New / Unread</div>
+        <div class="sc-num" id="stat-new">0</div>
+      </div>
+      <div class="stat-card green">
+        <div class="sc-label">Today</div>
+        <div class="sc-num" id="stat-today">0</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="sc-label">Subjects</div>
+        <div class="sc-num" id="stat-subjects">0</div>
+      </div>
+    </div>
+
+    <!-- MESSAGES SECTION -->
+    <div id="section-messages">
+      <div class="section-card">
+        <div class="section-card-header">
+          <h3>📨 Incoming Messages</h3>
+          <div class="actions">
+            <button class="btn-sm" onclick="markAllRead()">Mark All Read</button>
+            <button class="btn-sm danger" onclick="clearAll()">Clear All</button>
+            <button class="btn-sm" onclick="exportCSV()">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <input type="text" id="search-input" placeholder="Search by name, email, or message..."
+                 oninput="renderTable()" />
+          <select id="filter-subject" onchange="renderTable()">
+            <option value="">All Subjects</option>
+            <option>Project Collaboration</option>
+            <option>Job / Internship Opportunity</option>
+            <option>General Query</option>
+            <option>Feedback</option>
+            <option>Other</option>
+          </select>
+          <select id="filter-status" onchange="renderTable()">
+            <option value="">All Status</option>
+            <option value="new">New</option>
+            <option value="read">Read</option>
+          </select>
+        </div>
+
+        <div id="table-container">
+          <table class="msg-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Sender</th>
+                <th>Subject</th>
+                <th>Message Preview</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="msg-tbody"></tbody>
+          </table>
+          <div id="empty-state" class="empty-state" style="display:none">
+            <div class="empty-icon">📭</div>
+            <h3>No Messages Yet</h3>
+            <p>Messages sent from the contact form will appear here.</p>
+          </div>
+        </div>
+
+        <div class="pagination">
+          <div class="pagination-info" id="pg-info">Showing 0 of 0</div>
+          <div class="page-btns" id="page-btns"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div class="modal-overlay" id="msg-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📨 Message Detail</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── CONFIG ── */
+// Change this password to secure your admin panel
+const ADMIN_PASSWORD = 'admin123';
+
+// Change this to your Render.com backend URL
+const BACKEND_URL = 'https://your-backend.onrender.com/api/messages';
+
+const PER_PAGE = 10;
+let currentPage = 1;
+let messages = [];
+
+/* ── AUTH ── */
+function doLogin() {
+  const pwd = document.getElementById('pwd-input').value;
+  if (pwd === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('admin_auth', 'true');
+    loadMessages();
+  } else {
+    const err = document.getElementById('login-error');
+    err.textContent = '✖ Invalid password. Try again.';
+    setTimeout(() => err.textContent = '', 2000);
+    document.getElementById('pwd-input').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('admin_auth');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// Auto-login if already authenticated
+if (sessionStorage.getItem('admin_auth') === 'true') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadMessages();
+}
+
+/* ── LOAD MESSAGES ── */
+async function loadMessages() {
+  // Try backend first
+  try {
+    const res = await fetch(BACKEND_URL);
+    if (res.ok) {
+      messages = await res.json();
+      renderAll();
+      return;
+    }
+  } catch (e) { /* fall through to local */ }
+
+  // Load from localStorage (frontend-only mode)
+  messages = JSON.parse(localStorage.getItem('portfolio_messages') || '[]');
+  // Add status field if missing
+  messages = messages.map((m, i) => ({ ...m, id: m.id || Date.now() + i, status: m.status || 'new' }));
+  renderAll();
+}
+
+/* ── RENDER ── */
+function renderAll() {
+  updateStats();
+  renderTable();
+}
+
+function updateStats() {
+  const today = new Date().toDateString();
+  const newCount = messages.filter(m => m.status === 'new').length;
+  const todayCount = messages.filter(m => new Date(m.date).toDateString() === today).length;
+  const subjects = [...new Set(messages.map(m => m.subject).filter(Boolean))].length;
+
+  document.getElementById('stat-total').textContent   = messages.length;
+  document.getElementById('stat-new').textContent     = newCount;
+  document.getElementById('stat-today').textContent   = todayCount;
+  document.getElementById('stat-subjects').textContent = subjects;
+}
+
+function getFiltered() {
+  const search  = document.getElementById('search-input').value.toLowerCase();
+  const subject = document.getElementById('filter-subject').value;
+  const status  = document.getElementById('filter-status').value;
+
+  return messages.filter(m => {
+    const matchSearch  = !search || [m.name, m.email, m.message].some(v => (v||'').toLowerCase().includes(search));
+    const matchSubject = !subject || m.subject === subject;
+    const matchStatus  = !status  || m.status === status;
+    return matchSearch && matchSubject && matchStatus;
+  });
+}
+
+function renderTable() {
+  const filtered = getFiltered();
+  const total    = filtered.length;
+  const start    = (currentPage - 1) * PER_PAGE;
+  const paged    = filtered.slice(start, start + PER_PAGE);
+
+  const tbody = document.getElementById('msg-tbody');
+  const empty = document.getElementById('empty-state');
+
+  if (total === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = paged.map((m, i) => `
+      <tr>
+        <td style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--dim)">
+          ${start + i + 1}
+        </td>
+        <td>
+          <div class="sender-name">${escHtml(m.name || 'Unknown')}</div>
+          <div class="sender-email">${escHtml(m.email || '')}</div>
+        </td>
+        <td>${subjectBadge(m.subject)}</td>
+        <td><div class="msg-preview">${escHtml(m.message || '')}</div></td>
+        <td><div class="date-str">${formatDate(m.date)}</div></td>
+        <td><span class="badge ${m.status==='new'?'new':'read'}">${m.status==='new'?'NEW':'READ'}</span></td>
+        <td>
+          <div class="row-actions">
+            <div class="action-btn view-btn" onclick="viewMessage(${messages.indexOf(m)})" title="View">👁</div>
+            <div class="action-btn del-btn"  onclick="deleteMessage(${messages.indexOf(m)})" title="Delete">🗑</div>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // Pagination
+  const totalPages = Math.ceil(total / PER_PAGE);
+  document.getElementById('pg-info').textContent = `Showing ${Math.min(start+1,total)}–${Math.min(start+PER_PAGE,total)} of ${total}`;
+
+  const pgBtns = document.getElementById('page-btns');
+  pgBtns.innerHTML = '';
+  for (let p = 1; p <= totalPages; p++) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => { currentPage = p; renderTable(); };
+    pgBtns.appendChild(btn);
+  }
+}
+
+/* ── HELPERS ── */
+function subjectBadge(sub) {
+  const map = {
+    'Project Collaboration': 'collab',
+    'Job / Internship Opportunity': 'job',
+    'General Query': 'query',
+  };
+  const cls = map[sub] || 'query';
+  return sub ? `<span class="badge ${cls}">${escHtml(sub)}</span>` : '<span class="badge read">—</span>';
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return isNaN(dt) ? d : dt.toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── ACTIONS ── */
+function viewMessage(idx) {
+  const m = messages[idx];
+  if (!m) return;
+  m.status = 'read';
+  persist();
+  updateStats();
+  renderTable();
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-field">
+      <div class="mf-label">From</div>
+      <div class="mf-val highlight">${escHtml(m.name)} &lt;${escHtml(m.email)}&gt;</div>
+    </div>
+    <div class="modal-field">
+      <div class="mf-label">Subject</div>
+      <div class="mf-val">${escHtml(m.subject || '—')}</div>
+    </div>
+    <div class="modal-field">
+      <div class="mf-label">Date Received</div>
+      <div class="mf-val">${formatDate(m.date)}</div>
+    </div>
+    <div class="modal-field">
+      <div class="mf-label">Message</div>
+      <div class="mf-val" style="white-space:pre-wrap">${escHtml(m.message)}</div>
+    </div>
+  `;
+  document.getElementById('msg-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('msg-modal').classList.remove('open');
+}
+
+function deleteMessage(idx) {
+  if (!confirm('Delete this message?')) return;
+  messages.splice(idx, 1);
+  persist();
+  renderAll();
+  showToast('Message deleted');
+}
+
+function markAllRead() {
+  messages.forEach(m => m.status = 'read');
+  persist();
+  renderAll();
+  showToast('All messages marked as read');
+}
+
+function clearAll() {
+  if (!confirm('Delete ALL messages? This cannot be undone.')) return;
+  messages = [];
+  persist();
+  renderAll();
+  showToast('All messages cleared');
+}
+
+function exportCSV() {
+  if (messages.length === 0) { showToast('No messages to export'); return; }
+  const header = ['#','Name','Email','Subject','Message','Date','Status'];
+  const rows = messages.map((m,i) => [
+    i+1,
+    `"${(m.name||'').replace(/"/g,'""')}"`,
+    `"${(m.email||'').replace(/"/g,'""')}"`,
+    `"${(m.subject||'').replace(/"/g,'""')}"`,
+    `"${(m.message||'').replace(/"/g,'""')}"`,
+    formatDate(m.date),
+    m.status||'new'
+  ]);
+  const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `messages_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('CSV exported!');
+}
+
+function persist() {
+  localStorage.setItem('portfolio_messages', JSON.stringify(messages));
+}
+
+/* ── TEST DATA ── */
+const testNames = ['Rahul Sharma', 'Priya Nair', 'Arjun Mehta', 'Sneha Patel', 'Kiran Reddy'];
+const testSubjects = ['Project Collaboration', 'Job / Internship Opportunity', 'General Query', 'Feedback', 'Other'];
+const testMsgs = [
+  'Hi Abhishek! I saw your portfolio and I am really impressed. Would love to collaborate on a project.',
+  'Hello, I am a recruiter and I have an internship opportunity that might interest you.',
+  'Can you help me understand how you set up your CI/CD pipeline? I am trying to do the same.',
+  'Great portfolio website! The cybersecurity theme is really cool. Keep it up!',
+  'Would you be interested in contributing to an open-source project?'
+];
+
+function addTestMessage() {
+  const i = Math.floor(Math.random() * 5);
+  messages.unshift({
+    id: Date.now(),
+    name: testNames[i],
+    email: testNames[i].toLowerCase().replace(' ','.')+('@gmail.com'),
+    subject: testSubjects[i],
+    message: testMsgs[i],
+    date: new Date().toISOString(),
+    status: 'new'
+  });
+  persist();
+  renderAll();
+  showToast('Test message added!');
+}
+
+/* ── UI HELPERS ── */
+function showSection(s) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-title').textContent = s === 'messages' ? 'Messages Dashboard' : 'Analytics';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

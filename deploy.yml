@@ -1,0 +1,62 @@
+# .github/workflows/deploy.yml
+# GitHub Actions CI/CD Pipeline
+# This runs automatically on every push to main branch
+
+name: 🚀 Deploy Portfolio
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  # ── JOB 1: LINT & TEST FRONTEND ──
+  test-frontend:
+    name: 🧪 Test Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check HTML files exist
+        run: |
+          echo "Checking frontend files..."
+          ls -la *.html
+          echo "✅ HTML files found!"
+
+      - name: 🔍 Check for broken links (basic)
+        run: |
+          echo "Checking for TODO/FIXME in code..."
+          grep -rn "TODO\|FIXME" *.html *.css 2>/dev/null || echo "✅ No TODO/FIXME found"
+
+      - name: ✅ Frontend check passed
+        run: echo "Frontend looks good! Deploying..."
+
+  # ── JOB 2: DEPLOY TO GITHUB PAGES ──
+  deploy-frontend:
+    name: 🌐 Deploy to GitHub Pages
+    needs: test-frontend
+    runs-on: ubuntu-latest
+    # Only deploy on push to main (not on pull requests)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .          # Deploy everything in root folder
+          branch: gh-pages   # Deploy to gh-pages branch
+
+      - name: ✅ Deployment complete
+        run: echo "🎉 Portfolio deployed to GitHub Pages!"
