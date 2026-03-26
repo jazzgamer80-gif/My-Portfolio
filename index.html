@@ -1,1440 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Abhishek U | BCA Developer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #020b0f;
-      --bg2: #040f14;
-      --panel: #071520;
-      --panel2: #0a1e2b;
-      --cyan: #00f5ff;
-      --green: #00ff88;
-      --red: #ff2255;
-      --gold: #ffc400;
-      --text: #b8d4df;
-      --dim: #4a6b7a;
-      --border: rgba(0,245,255,0.15);
-      --glow: 0 0 20px rgba(0,245,255,0.3);
-      --glow2: 0 0 40px rgba(0,245,255,0.15);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    /* ── CANVAS BACKGROUND ── */
-    #matrix-bg {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0; opacity: 0.07;
-      pointer-events: none;
-    }
-
-    /* ── SCANLINE OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.03) 2px,
-        rgba(0,0,0,0.03) 4px
-      );
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 4rem;
-      height: 70px;
-      background: rgba(2,11,15,0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-logo {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.1rem;
-      font-weight: 900;
-      color: var(--cyan);
-      text-shadow: var(--glow);
-      letter-spacing: 3px;
-    }
-
-    .nav-logo span { color: var(--green); }
-
-    nav ul {
-      display: flex; gap: 2.5rem; list-style: none;
-    }
-
-    nav a {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--dim);
-      text-decoration: none;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      transition: color 0.3s, text-shadow 0.3s;
-      position: relative;
-    }
-
-    nav a::after {
-      content: '';
-      position: absolute; bottom: -4px; left: 0;
-      width: 0; height: 1px;
-      background: var(--cyan);
-      transition: width 0.3s;
-    }
-
-    nav a:hover { color: var(--cyan); text-shadow: var(--glow); }
-    nav a:hover::after { width: 100%; }
-
-    /* ── SECTIONS ── */
-    section { position: relative; z-index: 2; }
-
-    /* ── HERO ── */
-    #hero {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 8rem 4rem 4rem;
-      position: relative;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      max-width: 1200px;
-      width: 100%;
-      align-items: center;
-    }
-
-    .hero-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--green);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-
-    .hero-tag::before {
-      content: '> ';
-      color: var(--cyan);
-      animation: blink 1s step-end infinite;
-    }
-
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-    h1.hero-name {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.05;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    h1.hero-name .accent { color: var(--cyan); text-shadow: var(--glow); }
-
-    .hero-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1rem;
-      color: var(--green);
-      margin-bottom: 1.5rem;
-      letter-spacing: 2px;
-    }
-
-    .hero-desc {
-      font-size: 1.05rem;
-      color: var(--text);
-      max-width: 480px;
-      margin-bottom: 2.5rem;
-      line-height: 1.8;
-    }
-
-    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    .btn {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 0.8rem 2rem;
-      border: none; cursor: pointer;
-      text-decoration: none;
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      transition: all 0.3s;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-    }
-
-    .btn-primary {
-      background: var(--cyan);
-      color: var(--bg);
-      font-weight: 700;
-    }
-
-    .btn-primary:hover {
-      background: #fff;
-      box-shadow: 0 0 30px rgba(0,245,255,0.5);
-      transform: translateY(-2px);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--cyan);
-      border: 1px solid var(--cyan);
-    }
-
-    .btn-outline:hover {
-      background: rgba(0,245,255,0.1);
-      box-shadow: var(--glow);
-      transform: translateY(-2px);
-    }
-
-    /* Hero terminal card */
-    .hero-terminal {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: var(--glow2), inset 0 0 60px rgba(0,0,0,0.5);
-    }
-
-    .terminal-bar {
-      background: var(--panel2);
-      padding: 0.6rem 1rem;
-      display: flex; align-items: center; gap: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .terminal-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-    }
-
-    .terminal-body {
-      padding: 1.5rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 2;
-    }
-
-    .t-cyan { color: var(--cyan); }
-    .t-green { color: var(--green); }
-    .t-red { color: var(--red); }
-    .t-gold { color: var(--gold); }
-    .t-dim { color: var(--dim); }
-
-    .type-line { overflow: hidden; white-space: nowrap; }
-
-    .cursor-blink::after {
-      content: '█';
-      animation: blink 0.8s step-end infinite;
-      color: var(--cyan);
-    }
-
-    /* Stats row */
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      margin-top: 1px;
-      border-top: 1px solid var(--border);
-    }
-
-    .stat-box {
-      padding: 1rem;
-      text-align: center;
-      background: var(--panel2);
-      border-right: 1px solid var(--border);
-    }
-
-    .stat-box:last-child { border-right: none; }
-
-    .stat-num {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: var(--cyan);
-    }
-
-    .stat-label {
-      font-size: 0.7rem;
-      color: var(--dim);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    /* ── ABOUT ── */
-    #about {
-      padding: 8rem 4rem;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 5rem;
-    }
-
-    .section-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--green);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    h2.section-title {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1.8rem, 3vw, 2.8rem);
-      font-weight: 900;
-      color: #fff;
-      position: relative;
-      display: inline-block;
-    }
-
-    h2.section-title::after {
-      content: '';
-      position: absolute;
-      bottom: -12px; left: 50%;
-      transform: translateX(-50%);
-      width: 60px; height: 2px;
-      background: var(--cyan);
-      box-shadow: var(--glow);
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 4rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      align-items: start;
-    }
-
-    .id-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      position: sticky; top: 90px;
-    }
-
-    .id-header {
-      background: linear-gradient(135deg, var(--cyan) 0%, #007acc 100%);
-      padding: 1.5rem;
-      text-align: center;
-    }
-
-    .id-header .avatar {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      border: 3px solid #fff;
-      margin: 0 auto 1rem;
-      background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Orbitron', monospace;
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: var(--cyan);
-    }
-
-    .id-header h3 {
-      font-family: 'Orbitron', monospace;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-    }
-
-    .id-header p {
-      color: rgba(255,255,255,0.8);
-      font-size: 0.8rem;
-      margin-top: 0.25rem;
-    }
-
-    .id-body { padding: 1.5rem; }
-
-    .id-row {
-      display: flex; justify-content: space-between;
-      padding: 0.6rem 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-    }
-
-    .id-row:last-child { border-bottom: none; }
-    .id-key { color: var(--dim); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; }
-    .id-val { color: var(--cyan); font-weight: 600; }
-
-    .about-content h3 {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.2rem;
-      color: var(--cyan);
-      margin-bottom: 1rem;
-      margin-top: 2rem;
-    }
-
-    .about-content h3:first-child { margin-top: 0; }
-
-    .about-content p {
-      color: var(--text);
-      line-height: 1.9;
-      margin-bottom: 1rem;
-    }
-
-    .highlight-box {
-      background: var(--panel);
-      border-left: 3px solid var(--cyan);
-      padding: 1rem 1.5rem;
-      margin: 1.5rem 0;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--green);
-    }
-
-    /* ── SKILLS ── */
-    #skills {
-      padding: 8rem 4rem;
-      background: var(--bg2);
-    }
-
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .skill-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 1.8rem;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
-    }
-
-    .skill-card::before {
-      content: '';
-      position: absolute; top: 0; right: 0;
-      width: 0; height: 0;
-      border-style: solid;
-      border-width: 0 16px 16px 0;
-      border-color: transparent var(--cyan) transparent transparent;
-      opacity: 0.5;
-    }
-
-    .skill-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(0,245,255,0.4);
-      box-shadow: var(--glow2);
-    }
-
-    .skill-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .skill-card h3 {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.9rem;
-      color: var(--cyan);
-      margin-bottom: 1.2rem;
-      letter-spacing: 1px;
-    }
-
-    .skill-bar-wrap {
-      margin-bottom: 0.8rem;
-    }
-
-    .skill-bar-label {
-      display: flex; justify-content: space-between;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--dim);
-      margin-bottom: 0.3rem;
-    }
-
-    .skill-bar-label span:last-child { color: var(--green); }
-
-    .skill-bar-track {
-      height: 4px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .skill-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--green));
-      transform-origin: left;
-      animation: fillBar 1.5s ease-out forwards;
-      transform: scaleX(0);
-    }
-
-    @keyframes fillBar { to { transform: scaleX(1); } }
-
-    /* ── PROJECTS ── */
-    #projects {
-      padding: 8rem 4rem;
-      background: var(--bg);
-    }
-
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .project-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      position: relative;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .project-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--glow2);
-    }
-
-    .project-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 1rem;
-    }
-
-    .project-num {
-      font-family: 'Orbitron', monospace;
-      font-size: 2rem;
-      font-weight: 900;
-      color: rgba(0,245,255,0.15);
-      line-height: 1;
-    }
-
-    .project-body { padding: 1.5rem; }
-
-    .project-title {
-      font-family: 'Orbitron', monospace;
-      font-size: 1rem;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    .project-desc {
-      font-size: 0.9rem;
-      color: var(--dim);
-      line-height: 1.7;
-      margin-bottom: 1.2rem;
-    }
-
-    .project-tags {
-      display: flex; flex-wrap: wrap; gap: 0.4rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      padding: 0.2rem 0.6rem;
-      border: 1px solid rgba(0,245,255,0.3);
-      color: var(--cyan);
-      letter-spacing: 1px;
-    }
-
-    .project-links { display: flex; gap: 0.8rem; }
-
-    .project-link {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--green);
-      text-decoration: none;
-      letter-spacing: 1px;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.3s;
-    }
-
-    .project-link:hover { border-color: var(--green); }
-
-    /* ── WORKFLOW ── */
-    #workflow {
-      padding: 8rem 4rem;
-      background: var(--bg2);
-    }
-
-    .workflow-timeline {
-      max-width: 900px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .workflow-timeline::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 0; bottom: 0;
-      width: 1px;
-      background: linear-gradient(180deg, transparent, var(--cyan), transparent);
-      transform: translateX(-50%);
-    }
-
-    .workflow-step {
-      display: flex;
-      align-items: center;
-      margin-bottom: 3rem;
-      position: relative;
-    }
-
-    .workflow-step:nth-child(odd) { flex-direction: row; }
-    .workflow-step:nth-child(even) { flex-direction: row-reverse; }
-
-    .workflow-box {
-      width: calc(50% - 3rem);
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 1.5rem;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    .workflow-box:hover {
-      border-color: rgba(0,245,255,0.4);
-      box-shadow: var(--glow2);
-    }
-
-    .workflow-dot {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 2px solid var(--cyan);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Orbitron', monospace;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--cyan);
-      z-index: 1;
-      box-shadow: var(--glow);
-    }
-
-    .workflow-box h3 {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.85rem;
-      color: var(--cyan);
-      margin-bottom: 0.5rem;
-    }
-
-    .workflow-box p {
-      font-size: 0.85rem;
-      color: var(--dim);
-      line-height: 1.6;
-    }
-
-    .workflow-badge {
-      display: inline-block;
-      margin-top: 0.8rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.6rem;
-      background: rgba(0,255,136,0.1);
-      border: 1px solid rgba(0,255,136,0.3);
-      color: var(--green);
-    }
-
-    /* ── CONTACT ── */
-    #contact {
-      padding: 8rem 4rem;
-      background: var(--bg);
-    }
-
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.3fr;
-      gap: 4rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .contact-info h3 {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.1rem;
-      color: var(--cyan);
-      margin-bottom: 1rem;
-      margin-top: 2rem;
-    }
-
-    .contact-info h3:first-child { margin-top: 0; }
-
-    .contact-info p { color: var(--text); line-height: 1.8; }
-
-    .contact-item {
-      display: flex; align-items: center; gap: 1rem;
-      padding: 0.8rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .contact-icon {
-      width: 36px; height: 36px;
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-
-    .contact-item-text .label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--dim);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .contact-item-text .val {
-      color: var(--text);
-      font-size: 0.9rem;
-    }
-
-    /* FORM */
-    .contact-form {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 2rem;
-    }
-
-    .form-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--green);
-      letter-spacing: 3px;
-      margin-bottom: 1.5rem;
-      text-transform: uppercase;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .form-group { margin-bottom: 1rem; }
-
-    .form-group label {
-      display: block;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--dim);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.7rem 1rem;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px rgba(0,245,255,0.1);
-    }
-
-    .form-group textarea { height: 120px; resize: vertical; }
-
-    .form-group select option { background: var(--panel2); }
-
-    .form-submit {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 1.5rem;
-    }
-
-    #form-status {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      transition: color 0.3s;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      padding: 2rem 4rem;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      position: relative; z-index: 2;
-    }
-
-    .footer-logo {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.9rem;
-      color: var(--cyan);
-      letter-spacing: 3px;
-    }
-
-    .footer-text {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--dim);
-    }
-
-    .footer-links { display: flex; gap: 1.5rem; }
-
-    .footer-links a {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--dim);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    .footer-links a:hover { color: var(--cyan); }
-
-    /* ── UTILITIES ── */
-    .container { max-width: 1200px; margin: 0 auto; }
-
-    .grid-lines {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      z-index: 0;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s, transform 0.7s;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* mobile */
-    @media (max-width: 900px) {
-      nav { padding: 0 1.5rem; }
-      nav ul { display: none; }
-      #hero { padding: 6rem 1.5rem 3rem; }
-      .hero-grid { grid-template-columns: 1fr; }
-      #about, #skills, #projects, #workflow, #contact { padding: 5rem 1.5rem; }
-      .about-grid, .contact-grid { grid-template-columns: 1fr; }
-      .skills-grid, .projects-grid { grid-template-columns: 1fr; }
-      .workflow-timeline::before { left: 22px; }
-      .workflow-step, .workflow-step:nth-child(even) { flex-direction: row; }
-      .workflow-box { width: calc(100% - 4rem); margin-left: auto; }
-      .workflow-dot { left: 22px; }
-      footer { flex-direction: column; gap: 1rem; text-align: center; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abhishek Portfolio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin:0;
+  font-family: 'Rajdhani', sans-serif;
+  background:#0a0a0a;
+  color:#ccc;
+}
+
+/* NAV */
+nav {
+  background:#111;
+  padding:15px;
+  text-align:center;
+}
+nav a {
+  color:#00ffcc;
+  margin:0 15px;
+  text-decoration:none;
+}
+
+/* HERO */
+.hero {
+  text-align:center;
+  padding:60px 20px;
+}
+.hero h1 {
+  color:#00ffcc;
+  font-family:Orbitron;
+}
+.hero img {
+  width:200px;
+  height:200px;
+  border-radius:50%;
+  margin-top:20px;
+  border:2px solid #00ffcc;
+  box-shadow:0 0 25px #00ffcc;
+}
+
+/* SECTIONS */
+section {
+  padding:40px;
+  border-bottom:1px solid #222;
+}
+
+h2 {
+  color:#00ffcc;
+  font-family:Orbitron;
+}
+
+/* CONTACT */
+input, textarea {
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  background:#111;
+  border:1px solid #333;
+  color:white;
+}
+
+button {
+  background:#00ffcc;
+  border:none;
+  padding:10px 20px;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
 
-<canvas id="matrix-bg"></canvas>
-
-<!-- NAV -->
+<!-- NAVBAR -->
 <nav>
-  <div class="nav-logo">ABH<span>_</span>U</div>
-  <ul>
-    <li><a href="#hero">Home</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#workflow">Workflow</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="admin.html" style="color:var(--red)">Admin</a></li>
-  </ul>
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#skills">Skills</a>
+  <a href="#projects">Projects</a>
+  <a href="#workflow">Workflow</a>
+  <a href="#contact">Contact</a>
 </nav>
 
 <!-- HERO -->
-<section id="hero">
-  <div class="grid-lines"></div>
-  <div class="hero-grid">
-    <div class="hero-left">
-      <div class="hero-tag">BCA Student // Developer</div>
-      <h1 class="hero-name">Abhishek<br><span class="accent">U</span></h1>
-      <div class="hero-title">Full-Stack Developer & Tech Enthusiast</div>
-      <p class="hero-desc">
-        Building the future one commit at a time. Pursuing BCA while diving deep into
-        web development, systems design, and the art of clean code.
-      </p>
-      <div class="hero-btns">
-        <a href="#projects" class="btn btn-primary">View Projects</a>
-        <a href="#contact" class="btn btn-outline">Contact Me</a>
-      </div>
-    </div>
+<section class="hero" id="home">
+  <h1>Hi, I'm Abhishek U</h1>
+  <p>Cybersecurity Enthusiast | BCA Student</p>
 
-    <div class="hero-terminal">
-      <div class="terminal-bar">
-        <div class="terminal-dot" style="background:#ff5f57"></div>
-        <div class="terminal-dot" style="background:#ffbd2e"></div>
-        <div class="terminal-dot" style="background:#28ca41"></div>
-        <span style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--dim);margin-left:0.5rem">
-          abhishek@portfolio:~
-        </span>
-      </div>
-      <div class="terminal-body">
-        <div class="t-dim">// initializing portfolio.exe</div>
-        <div><span class="t-cyan">$</span> whoami</div>
-        <div class="t-green">Abhishek U — BCA Student & Developer</div>
-        <div><span class="t-cyan">$</span> cat skills.txt</div>
-        <div class="t-gold">HTML · CSS · JavaScript · Node.js</div>
-        <div class="t-gold">Python · PostgreSQL · Git · Linux</div>
-        <div><span class="t-cyan">$</span> git log --oneline</div>
-        <div class="t-dim">a3f8c12 feat: portfolio website complete</div>
-        <div class="t-dim">b29d441 fix: CI/CD pipeline setup</div>
-        <div class="t-dim">e11f903 init: project scaffold</div>
-        <div><span class="t-cyan">$</span> status --live <span class="cursor-blink"></span></div>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-box">
-          <div class="stat-num">3+</div>
-          <div class="stat-label">Projects</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">6+</div>
-          <div class="stat-label">Technologies</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">BCA</div>
-          <div class="stat-label">Pursuing</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <img src="images/profile.jpg" alt="Profile">
 </section>
 
 <!-- ABOUT -->
 <section id="about">
-  <div class="section-header reveal">
-    <div class="section-tag">// about me</div>
-    <h2 class="section-title">Identify. Initialize. Execute.</h2>
-  </div>
-  <div class="about-grid">
-    <div class="id-card reveal">
-      <div class="id-header">
-        <div class="avatar">AU</div>
-        <h3>Abhishek U</h3>
-        <p>BCA — Computer Science</p>
-      </div>
-      <div class="id-body">
-        <div class="id-row">
-          <span class="id-key">ROLE</span>
-          <span class="id-val">Full-Stack Dev</span>
-        </div>
-        <div class="id-row">
-          <span class="id-key">COURSE</span>
-          <span class="id-val">BCA</span>
-        </div>
-        <div class="id-row">
-          <span class="id-key">FOCUS</span>
-          <span class="id-val">Web Dev</span>
-        </div>
-        <div class="id-row">
-          <span class="id-key">LOCATION</span>
-          <span class="id-val">India</span>
-        </div>
-        <div class="id-row">
-          <span class="id-key">STATUS</span>
-          <span class="id-val" style="color:var(--green)">● ONLINE</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="about-content reveal">
-      <h3>Who Am I?</h3>
-      <p>
-        I'm Abhishek U, a passionate BCA student with a love for building things on the web.
-        From crafting pixel-perfect frontends to designing robust backend APIs, I enjoy the
-        full journey of bringing ideas to life through code.
-      </p>
-
-      <div class="highlight-box">
-        > Currently learning full-stack development following industry-grade DevOps workflows
-      </div>
-
-      <h3>My Approach</h3>
-      <p>
-        I believe in learning by doing. Every project is an opportunity to apply real-world
-        workflows — version control with Git, automated testing with CI/CD, and cloud deployment.
-        I follow my HOD's Modern Web Development Workflow to structure every project.
-      </p>
-
-      <h3>Goals</h3>
-      <p>
-        My goal is to become a professional full-stack developer who understands not just code,
-        but the entire ecosystem — from local dev environments to production deployments.
-        I'm building that foundation one project at a time.
-      </p>
-    </div>
-  </div>
+  <h2>About Me</h2>
+  <p>I am a BCA student passionate about cybersecurity and web development.</p>
 </section>
 
 <!-- SKILLS -->
 <section id="skills">
-  <div class="section-header reveal">
-    <div class="section-tag">// tech stack</div>
-    <h2 class="section-title">Skills & Arsenal</h2>
-  </div>
-
-  <div class="skills-grid">
-    <div class="skill-card reveal">
-      <div class="skill-icon">🌐</div>
-      <h3>Frontend</h3>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>HTML5</span><span>85%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>CSS3</span><span>80%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:80%;animation-delay:0.2s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>JavaScript</span><span>70%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:70%;animation-delay:0.4s"></div></div>
-      </div>
-    </div>
-
-    <div class="skill-card reveal">
-      <div class="skill-icon">⚙️</div>
-      <h3>Backend</h3>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>Node.js</span><span>65%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:65%;animation-delay:0.1s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>Express.js</span><span>60%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%;animation-delay:0.3s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>Python</span><span>55%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:55%;animation-delay:0.5s"></div></div>
-      </div>
-    </div>
-
-    <div class="skill-card reveal">
-      <div class="skill-icon">🗄️</div>
-      <h3>Database</h3>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>PostgreSQL</span><span>60%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%;animation-delay:0.1s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>MySQL</span><span>65%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:65%;animation-delay:0.3s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>SQL Basics</span><span>70%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:70%;animation-delay:0.5s"></div></div>
-      </div>
-    </div>
-
-    <div class="skill-card reveal">
-      <div class="skill-icon">🔧</div>
-      <h3>DevOps / Tools</h3>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>Git & GitHub</span><span>75%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:75%"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>GitHub Actions</span><span>55%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:55%;animation-delay:0.2s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>VS Code</span><span>85%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%;animation-delay:0.4s"></div></div>
-      </div>
-    </div>
-
-    <div class="skill-card reveal">
-      <div class="skill-icon">☁️</div>
-      <h3>Deployment</h3>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>GitHub Pages</span><span>80%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:80%"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>Render.com</span><span>60%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%;animation-delay:0.2s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>CI/CD Basics</span><span>55%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:55%;animation-delay:0.4s"></div></div>
-      </div>
-    </div>
-
-    <div class="skill-card reveal">
-      <div class="skill-icon">📚</div>
-      <h3>Currently Learning</h3>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>React.js</span><span>30%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:30%"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>Docker</span><span>20%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:20%;animation-delay:0.2s"></div></div>
-      </div>
-      <div class="skill-bar-wrap">
-        <div class="skill-bar-label"><span>REST APIs</span><span>60%</span></div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%;animation-delay:0.4s"></div></div>
-      </div>
-    </div>
-  </div>
+  <h2>Skills</h2>
+  <ul>
+    <li>HTML, CSS, JavaScript</li>
+    <li>Node.js, Express</li>
+    <li>PostgreSQL</li>
+    <li>Git & GitHub</li>
+  </ul>
 </section>
 
 <!-- PROJECTS -->
 <section id="projects">
-  <div class="section-header reveal">
-    <div class="section-tag">// portfolio</div>
-    <h2 class="section-title">Projects</h2>
-  </div>
-  <div class="projects-grid">
-
-    <div class="project-card reveal">
-      <div class="project-header">
-        <div class="project-num">01</div>
-        <div>
-          <div class="project-title">Portfolio Website</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--green)">LIVE</div>
-        </div>
-      </div>
-      <div class="project-body">
-        <p class="project-desc">
-          This very portfolio — built with HTML, CSS, JavaScript following my HOD's Modern Web
-          Development Workflow with CI/CD and GitHub Pages deployment.
-        </p>
-        <div class="project-tags">
-          <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span>
-          <span class="tag">GitHub Actions</span><span class="tag">GitHub Pages</span>
-        </div>
-        <div class="project-links">
-          <a href="#" class="project-link">GitHub →</a>
-          <a href="#" class="project-link">Live Demo →</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card reveal">
-      <div class="project-header">
-        <div class="project-num">02</div>
-        <div>
-          <div class="project-title">Contact API Backend</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--gold)">IN PROGRESS</div>
-        </div>
-      </div>
-      <div class="project-body">
-        <p class="project-desc">
-          Node.js + Express REST API connected to PostgreSQL database. Handles contact form
-          submissions with proper validation and CORS support.
-        </p>
-        <div class="project-tags">
-          <span class="tag">Node.js</span><span class="tag">Express</span>
-          <span class="tag">PostgreSQL</span><span class="tag">Render</span>
-        </div>
-        <div class="project-links">
-          <a href="#" class="project-link">GitHub →</a>
-          <a href="#" class="project-link">API Docs →</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card reveal">
-      <div class="project-header">
-        <div class="project-num">03</div>
-        <div>
-          <div class="project-title">BCA Notes Hub</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--dim)">PLANNED</div>
-        </div>
-      </div>
-      <div class="project-body">
-        <p class="project-desc">
-          A collaborative platform for BCA students to share notes, resources, and study
-          materials. Full-stack project with user auth.
-        </p>
-        <div class="project-tags">
-          <span class="tag">React</span><span class="tag">Node.js</span>
-          <span class="tag">PostgreSQL</span><span class="tag">JWT</span>
-        </div>
-        <div class="project-links">
-          <a href="#" class="project-link">GitHub →</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <h2>Projects</h2>
+  <p>Portfolio Website (this project)</p>
 </section>
 
 <!-- WORKFLOW -->
 <section id="workflow">
-  <div class="section-header reveal">
-    <div class="section-tag">// HOD's workflow</div>
-    <h2 class="section-title">Modern Web Dev Workflow</h2>
-  </div>
-
-  <div class="workflow-timeline">
-
-    <div class="workflow-step reveal">
-      <div class="workflow-box">
-        <h3>01 — Local Git Repository</h3>
-        <p>HTML, CSS, JS for frontend. Node.js/Python for backend. MySQL/PostgreSQL for local database. All tracked in Git.</p>
-        <span class="workflow-badge">git init · git commit</span>
-      </div>
-      <div class="workflow-dot">01</div>
-    </div>
-
-    <div class="workflow-step reveal">
-      <div class="workflow-dot">02</div>
-      <div class="workflow-box">
-        <h3>02 — GitHub / GitLab</h3>
-        <p>Push code to remote repository. Enables collaboration, backup, and triggers the CI/CD pipeline automatically on every push.</p>
-        <span class="workflow-badge">git push origin main</span>
-      </div>
-    </div>
-
-    <div class="workflow-step reveal">
-      <div class="workflow-box">
-        <h3>03 — CI/CD Pipeline</h3>
-        <p>GitHub Actions automatically runs on every push. Runs linting, testing, and build checks to ensure code quality before deployment.</p>
-        <span class="workflow-badge">GitHub Actions · Auto-deploy</span>
-      </div>
-      <div class="workflow-dot">03</div>
-    </div>
-
-    <div class="workflow-step reveal">
-      <div class="workflow-dot">04</div>
-      <div class="workflow-box">
-        <h3>04 — Hosting</h3>
-        <p>Frontend deployed to GitHub Pages (free). Backend deployed to Render.com (free tier). PostgreSQL database hosted in the cloud.</p>
-        <span class="workflow-badge">GitHub Pages · Render.com</span>
-      </div>
-    </div>
-
-    <div class="workflow-step reveal">
-      <div class="workflow-box">
-        <h3>05 — Web Browser</h3>
-        <p>Users access the live website via domain. Contact form sends data to the backend API which stores it in PostgreSQL. Full circle!</p>
-        <span class="workflow-badge">Live · Production Ready</span>
-      </div>
-      <div class="workflow-dot">05</div>
-    </div>
-
-  </div>
+  <h2>Workflow</h2>
+  <p>Local → GitHub → CI/CD → Hosting → Browser</p>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="section-header reveal">
-    <div class="section-tag">// reach me</div>
-    <h2 class="section-title">Contact</h2>
-  </div>
+  <h2>Contact Me</h2>
 
-  <div class="contact-grid">
-    <div class="contact-info reveal">
-      <h3>Let's Connect</h3>
-      <p>Have a project idea, want to collaborate, or just want to say hi? I'm always open to connecting with fellow developers and learners.</p>
+  <form id="contactForm">
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
+    <textarea id="message" placeholder="Message" required></textarea>
+    <button type="submit">Send</button>
+  </form>
 
-      <div style="margin-top:2rem">
-        <div class="contact-item">
-          <div class="contact-icon">✉️</div>
-          <div class="contact-item-text">
-            <div class="label">Email</div>
-            <div class="val">abhishek.u@example.com</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">🐙</div>
-          <div class="contact-item-text">
-            <div class="label">GitHub</div>
-            <div class="val">github.com/abhishek-u</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">🎓</div>
-          <div class="contact-item-text">
-            <div class="label">Course</div>
-            <div class="val">BCA — Computer Applications</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">📍</div>
-          <div class="contact-item-text">
-            <div class="label">Location</div>
-            <div class="val">India</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="contact-form reveal">
-      <div class="form-title">> Send a message</div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" id="f-name" placeholder="Your name" />
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="f-email" placeholder="your@email.com" />
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Subject</label>
-        <select id="f-subject">
-          <option value="">Select subject</option>
-          <option>Project Collaboration</option>
-          <option>Job / Internship Opportunity</option>
-          <option>General Query</option>
-          <option>Feedback</option>
-          <option>Other</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Message</label>
-        <textarea id="f-message" placeholder="Write your message here..."></textarea>
-      </div>
-
-      <div class="form-submit">
-        <span id="form-status"></span>
-        <button class="btn btn-primary" onclick="submitForm()">Send Message ▶</button>
-      </div>
-    </div>
-  </div>
+  <p id="status"></p>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">ABH_U</div>
-  <div class="footer-text">© 2025 Abhishek U · Built following HOD's Workflow</div>
-  <div class="footer-links">
-    <a href="#">GitHub</a>
-    <a href="#">LinkedIn</a>
-    <a href="admin.html">Admin</a>
-  </div>
-</footer>
-
 <script>
-/* ── MATRIX BACKGROUND ── */
-const canvas = document.getElementById('matrix-bg');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+const BACKEND_URL = "https://your-backend.onrender.com/api/contact";
 
-const chars = '01アイウエオカキクケコ';
-const cols = Math.floor(canvas.width / 16);
-const drops = Array(cols).fill(1);
+document.getElementById("contactForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-function drawMatrix() {
-  ctx.fillStyle = 'rgba(2,11,15,0.05)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#00f5ff';
-  ctx.font = '12px Share Tech Mono, monospace';
-  for (let i = 0; i < drops.length; i++) {
-    const ch = chars[Math.floor(Math.random() * chars.length)];
-    ctx.fillText(ch, i * 16, drops[i] * 16);
-    if (drops[i] * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-    drops[i]++;
-  }
-}
-setInterval(drawMatrix, 50);
-
-/* ── REVEAL ON SCROLL ── */
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-/* ── CONTACT FORM ── */
-async function submitForm() {
-  const name    = document.getElementById('f-name').value.trim();
-  const email   = document.getElementById('f-email').value.trim();
-  const subject = document.getElementById('f-subject').value;
-  const message = document.getElementById('f-message').value.trim();
-  const status  = document.getElementById('form-status');
-
-  if (!name || !email || !message) {
-    status.style.color = 'var(--red)';
-    status.textContent = '✖ Please fill all required fields';
-    return;
-  }
-
-  status.style.color = 'var(--gold)';
-  status.textContent = '⟳ Sending...';
-
-  // ── CHANGE THIS URL to your Render.com backend URL ──
-  const BACKEND_URL = 'https://your-backend.onrender.com/api/contact';
+  const data = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    message: document.getElementById("message").value
+  };
 
   try {
     const res = await fetch(BACKEND_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, subject, message })
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(data)
     });
-    if (res.ok) {
-      status.style.color = 'var(--green)';
-      status.textContent = '✔ Message sent successfully!';
-      document.getElementById('f-name').value = '';
-      document.getElementById('f-email').value = '';
-      document.getElementById('f-subject').value = '';
-      document.getElementById('f-message').value = '';
+
+    if(res.ok){
+      document.getElementById("status").innerText = "Message sent!";
+      this.reset();
     } else {
-      throw new Error();
+      document.getElementById("status").innerText = "Error sending message";
     }
-  } catch {
-    // Save locally if backend not connected yet
-    const msgs = JSON.parse(localStorage.getItem('portfolio_messages') || '[]');
-    msgs.push({ name, email, subject, message, date: new Date().toISOString() });
-    localStorage.setItem('portfolio_messages', JSON.stringify(msgs));
-    status.style.color = 'var(--green)';
-    status.textContent = '✔ Message saved! (backend coming soon)';
+
+  } catch(err){
+    document.getElementById("status").innerText = "Server error";
   }
-}
+});
 </script>
+
 </body>
 </html>
