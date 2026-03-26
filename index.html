@@ -841,14 +841,9 @@
     }
 
     .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s, transform 0.7s;
-    }
-
-    .reveal.visible {
       opacity: 1;
       transform: translateY(0);
+      transition: opacity 0.7s, transform 0.7s;
     }
 
     /* mobile */
@@ -1285,7 +1280,7 @@
           <div class="contact-icon">✉️</div>
           <div class="contact-item-text">
             <div class="label">Email</div>
-            <div class="val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4b5b6bcbda7bcb1bffaa194b1acb5b9a4b8b1fab7bbb9">[email&#160;protected]</a></div>
+            <div class="val">abhishek.u@gmail.com</div>
           </div>
         </div>
         <div class="contact-item">
@@ -1362,7 +1357,7 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ── MATRIX BACKGROUND ── */
 const canvas = document.getElementById('matrix-bg');
 const ctx = canvas.getContext('2d');
@@ -1436,4 +1431,12 @@ async function submitForm() {
   } catch {
     // Save locally if backend not connected yet
     const msgs = JSON.parse(localStorage.getItem('portfolio_messages') || '[]');
-    msgs.push({ name, email, subject, message, date: new Date
+    msgs.push({ name, email, subject, message, date: new Date().toISOString() });
+    localStorage.setItem('portfolio_messages', JSON.stringify(msgs));
+    status.style.color = 'var(--green)';
+    status.textContent = '✔ Message saved! (backend coming soon)';
+  }
+}
+</script>
+</body>
+</html>
