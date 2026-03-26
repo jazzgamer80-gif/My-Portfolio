@@ -5,133 +5,165 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Abhishek Portfolio</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin:0;
   font-family: 'Rajdhani', sans-serif;
-  background:#0a0a0a;
+  background:#050505;
   color:#ccc;
 }
 
-/* NAV */
+/* NAVBAR */
 nav {
-  background:#111;
-  padding:15px;
-  text-align:center;
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  padding:20px;
+  background:#0d0d0d;
+  border-bottom:1px solid #222;
 }
+
 nav a {
   color:#00ffcc;
-  margin:0 15px;
   text-decoration:none;
+  font-size:14px;
 }
 
 /* HERO */
 .hero {
+  height:90vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
   text-align:center;
-  padding:60px 20px;
 }
+
 .hero h1 {
-  color:#00ffcc;
   font-family:Orbitron;
+  font-size:3rem;
+  color:#00ffcc;
 }
-.hero img {
-  width:200px;
-  height:200px;
+
+.hero p {
+  color:#888;
+}
+
+/* IMAGE */
+.profile {
+  margin-top:30px;
+}
+
+.profile img {
+  width:220px;
+  height:220px;
   border-radius:50%;
-  margin-top:20px;
-  border:2px solid #00ffcc;
-  box-shadow:0 0 25px #00ffcc;
+  object-fit:cover;
+  border:3px solid #00ffcc;
+  box-shadow:0 0 40px #00ffcc;
+  transition:0.3s;
+}
+
+.profile img:hover {
+  transform:scale(1.05);
+  box-shadow:0 0 60px #00ffcc;
 }
 
 /* SECTIONS */
 section {
-  padding:40px;
-  border-bottom:1px solid #222;
+  padding:60px 10%;
 }
 
 h2 {
   color:#00ffcc;
   font-family:Orbitron;
+  margin-bottom:20px;
+}
+
+/* CARDS */
+.card {
+  background:#0d0d0d;
+  padding:20px;
+  margin:10px 0;
+  border:1px solid #222;
+  transition:0.3s;
+}
+
+.card:hover {
+  border-color:#00ffcc;
+  box-shadow:0 0 15px #00ffcc44;
 }
 
 /* CONTACT */
 input, textarea {
   width:100%;
-  padding:10px;
+  padding:12px;
   margin:10px 0;
   background:#111;
-  border:1px solid #333;
+  border:1px solid #222;
   color:white;
 }
 
 button {
   background:#00ffcc;
+  padding:12px 20px;
   border:none;
-  padding:10px 20px;
   cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover {
+  background:#00ddb3;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <nav>
-  <a href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#skills">Skills</a>
-  <a href="#projects">Projects</a>
-  <a href="#workflow">Workflow</a>
-  <a href="#contact">Contact</a>
+<a href="#home">Home</a>
+<a href="#about">About</a>
+<a href="#skills">Skills</a>
+<a href="#contact">Contact</a>
 </nav>
 
 <!-- HERO -->
-<section class="hero" id="home">
-  <h1>Hi, I'm Abhishek U</h1>
-  <p>Cybersecurity Enthusiast | BCA Student</p>
+<div class="hero" id="home">
+  <h1>ABHISHEK U</h1>
+  <p>Cybersecurity | Full Stack Developer</p>
 
-  <img src="images/profile.jpg" alt="Profile">
-</section>
+  <div class="profile">
+    <img src="images/profile.jpg" alt="Profile">
+  </div>
+</div>
 
 <!-- ABOUT -->
 <section id="about">
   <h2>About Me</h2>
-  <p>I am a BCA student passionate about cybersecurity and web development.</p>
+  <div class="card">
+    I am a BCA student passionate about cybersecurity and web development.
+  </div>
 </section>
 
 <!-- SKILLS -->
 <section id="skills">
   <h2>Skills</h2>
-  <ul>
-    <li>HTML, CSS, JavaScript</li>
-    <li>Node.js, Express</li>
-    <li>PostgreSQL</li>
-    <li>Git & GitHub</li>
-  </ul>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects">
-  <h2>Projects</h2>
-  <p>Portfolio Website (this project)</p>
-</section>
-
-<!-- WORKFLOW -->
-<section id="workflow">
-  <h2>Workflow</h2>
-  <p>Local → GitHub → CI/CD → Hosting → Browser</p>
+  <div class="card">HTML, CSS, JavaScript</div>
+  <div class="card">Node.js, Express</div>
+  <div class="card">PostgreSQL</div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <h2>Contact Me</h2>
+  <h2>Contact</h2>
 
   <form id="contactForm">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="email" id="email" placeholder="Your Email" required>
-    <textarea id="message" placeholder="Message" required></textarea>
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <textarea id="message" placeholder="Message"></textarea>
     <button type="submit">Send</button>
   </form>
 
@@ -141,31 +173,30 @@ button {
 <script>
 const BACKEND_URL = "https://your-backend.onrender.com/api/contact";
 
-document.getElementById("contactForm").addEventListener("submit", async function(e) {
+document.getElementById("contactForm").addEventListener("submit", async function(e){
   e.preventDefault();
 
   const data = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    message: document.getElementById("message").value
+    name: name.value,
+    email: email.value,
+    message: message.value
   };
 
-  try {
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
+  try{
+    const res = await fetch(BACKEND_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body: JSON.stringify(data)
     });
 
     if(res.ok){
-      document.getElementById("status").innerText = "Message sent!";
+      status.innerText = "Message Sent!";
       this.reset();
     } else {
-      document.getElementById("status").innerText = "Error sending message";
+      status.innerText = "Error!";
     }
-
-  } catch(err){
-    document.getElementById("status").innerText = "Server error";
+  }catch{
+    status.innerText = "Server Error";
   }
 });
 </script>
